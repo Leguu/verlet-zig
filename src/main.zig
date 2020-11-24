@@ -16,13 +16,13 @@ pub fn main() anyerror!void {
         }
 
         if (1 == lsdl.SDL_GetMouseState(0, 0)) {
-            core.renderer.setDrawColor(255, 0, 0, 255);
-            core.renderer.drawCircle(@intToFloat(f32, event.button.x), @intToFloat(f32, event.button.y), 10);
+            core.render.setDrawColor(255, 0, 0, 255);
+            core.render.drawCircle(@intToFloat(f32, event.button.x), @intToFloat(f32, event.button.y), 10);
         }
 
-        core.renderer.setDrawColor(255, 255, 255, 255);
-        core.renderer.drawCircle(@intToFloat(f32, core.window_width) / 2, @intToFloat(f32, core.window_height) / 2, 50);
+        core.render.setDrawColor(255, 255, 255, 255);
+        core.render.drawCircle(@intToFloat(f32, core.window_width) / 2, @intToFloat(f32, core.window_height) / 2, 50);
 
-        core.renderer.present();
+        core.render.present();
     }
 }
