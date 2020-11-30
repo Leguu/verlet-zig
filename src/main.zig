@@ -1,28 +1,41 @@
 const std = @import("std");
 const lsdl = @import("lsdl");
 
+const Rope = @import("rope.zig").Rope;
+
+pub const Vector = lsdl.math.Vector(f32);
+
 pub fn main() anyerror!void {
     var core = lsdl.core.Core.new(1000, 800);
     var timer = try lsdl.timer.Timer.new();
 
-    MAIN: while (true) {
-        if (!timer.doFrame(60)) continue;
+    var rope = Rope(256).new(0, 0);
 
+    var running = true;
+    while (running) {
         const event = &core.input.event;
         while (core.input.poll()) {
-            if (core.input.event.type == lsdl.SDL_QUIT or core.input.event.button.button == lsdl.SDL_SCANCODE_Q) {
-                break :MAIN;
+            if (event.type == lsdl.SDL_QUIT or event.button.button == lsdl.SDL_SCANCODE_Q) {
+                running = false;
             }
         }
 
         if (1 == lsdl.SDL_GetMouseState(0, 0)) {
-            core.render.setDrawColor(255, 0, 0, 255);
-            core.render.drawCircle(@intToFloat(f32, event.button.x), @intToFloat(f32, event.button.y), 10);
+            rope.head().set(@intToFloat(f32, event.button.x), @intToFloat(f32, event.button.y));
+            rope.update_head = false;
+        } else {
+            rope.update_head = true;
         }
 
-        core.render.setDrawColor(255, 255, 255, 255);
-        core.render.drawCircle(@intToFloat(f32, core.window_width) / 2, @intToFloat(f32, core.window_height) / 2, 50);
+        if (!timer.doFrame(60)) continue;
+        const dt = 10 * timer.deltaTime(f32) / std.time.ns_per_s;
 
+        rope.update(dt);
+
+        core.render.clear(0, 0, 0, 255);
+        rope.render(&core.render);
         core.render.present();
+
+        timer.tick();
     }
 }
