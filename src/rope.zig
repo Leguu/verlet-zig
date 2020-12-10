@@ -9,9 +9,9 @@ const ArrayList = std.ArrayList;
 
 pub fn Rope(len: usize) type {
     return struct {
-        nodes: [len]Node,
-        update_head: bool = false,
         core: *lsdl.Core,
+        nodes: [len]Node,
+        previous_mouse: Vector = Vector.zero(),
 
         const gravity = Vector.new(0, 98);
         const friction = Vector.new(0.99, 0.99);
@@ -43,6 +43,17 @@ pub fn Rope(len: usize) type {
             return &self.nodes[0];
         }
 
+        pub fn input(self: *Self) void {
+            if (self.core.input.mouse_pressed()) {
+                var node = self.head();
+                const pos = self.core.input.mouse_position();
+                const vec = Vector.new(@intToFloat(f32, pos.x), @intToFloat(f32, pos.y));
+
+                node.position = vec;
+                node.previous = vec;
+            }
+        }
+
         pub fn update(self: *Self, dt: f32) void {
             self.simulate(dt);
             var i: usize = 0;
@@ -53,7 +64,7 @@ pub fn Rope(len: usize) type {
 
         pub fn simulate(self: *Self, dt: f32) void {
             for (self.nodes) |*node, i| {
-                if (node == self.head() and !self.update_head) {
+                if (node == self.head() and self.core.input.mouse_pressed()) {
                     continue;
                 }
                 var velocity = node.velocity();
@@ -65,25 +76,25 @@ pub fn Rope(len: usize) type {
                 node.previous_dt = dt;
                 node.previous = node.position;
 
+                // Constrain to window size
+                const size = self.core.window.size();
+                node.position.y = std.math.min(node.position.y, @intToFloat(f32, size.height - 10));
+                node.position.y = std.math.max(node.position.y, 10);
+                node.position.x = std.math.min(node.position.x, @intToFloat(f32, size.width - 10));
+                node.position.x = std.math.max(node.position.x, 10);
+
                 node.position = node.position.add(velocity).add(acceleration);
             }
         }
 
         pub fn handleConstraints(self: *Self) void {
             for (self.nodes) |*current, i| {
-                const size = self.core.window.size();
-                current.position.y = std.math.min(current.position.y, @intToFloat(f32, size.height - 10));
-                current.position.y = std.math.max(current.position.y, 10);
-
-                current.position.x = std.math.min(current.position.x, @intToFloat(f32, size.width - 10));
-                current.position.x = std.math.max(current.position.x, 10);
-
                 if (i + 1 >= self.nodes.len) break;
                 const next: *Node = &self.nodes[i + 1];
 
                 const distance = next.distance(current.*);
 
-                if (!current.equals(self.head().*) or self.update_head) {
+                if (!current.equals(self.head().*) or !self.core.input.mouse_pressed()) {
                     const temp = current.position;
                     current.position.moveToward(next.position, (distance - node_distance) * 0.91);
                     next.position.moveToward(temp, (distance - node_distance) * 0.91);

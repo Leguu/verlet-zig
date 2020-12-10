@@ -10,20 +10,13 @@ pub fn main() anyerror!void {
     var timer_sixty = try lsdl.Timer.new();
     var timer_hundred = try lsdl.Timer.new();
 
-    var rope = Rope(256).new(&core, 0, 0);
+    var rope = Rope(1).new(&core, 0, 0);
 
     var running = true;
     while (running) {
         while (core.input.poll()) |event| {
             if (event.type == lsdl.SDL_QUIT or event.button.button == lsdl.SDL_SCANCODE_Q) {
                 running = false;
-            }
-
-            if (1 == lsdl.SDL_GetMouseState(0, 0)) {
-                rope.head().set(@intToFloat(f32, event.button.x), @intToFloat(f32, event.button.y));
-                rope.update_head = false;
-            } else {
-                rope.update_head = true;
             }
         }
 
@@ -36,6 +29,8 @@ pub fn main() anyerror!void {
         }
 
         if (timer_sixty.doFrame(60)) {
+            rope.input();
+
             core.render.clear(0, 0, 0, 255);
             rope.render(&core.render);
             core.render.present();
