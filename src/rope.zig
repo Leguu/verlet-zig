@@ -50,7 +50,7 @@ pub fn Rope(len: usize) type {
                 const vec = Vector.new(@intToFloat(f32, pos.x), @intToFloat(f32, pos.y));
 
                 node.position = vec;
-                node.previous = vec;
+                node.previous.redistance(vec, 0.8);
             }
         }
 
@@ -67,6 +67,7 @@ pub fn Rope(len: usize) type {
                 if (node == self.head() and self.core.input.mouse_pressed()) {
                     continue;
                 }
+                if (!self.head().equals(node.*)) self.windowConstraint(node);
                 var velocity = node.velocity();
                 var acceleration = gravity;
 
@@ -76,15 +77,20 @@ pub fn Rope(len: usize) type {
                 node.previous_dt = dt;
                 node.previous = node.position;
 
-                // Constrain to window size
-                const size = self.core.window.size();
-                node.position.y = std.math.min(node.position.y, @intToFloat(f32, size.height - 10));
-                node.position.y = std.math.max(node.position.y, 10);
-                node.position.x = std.math.min(node.position.x, @intToFloat(f32, size.width - 10));
-                node.position.x = std.math.max(node.position.x, 10);
+                if (self.head().equals(node.*))
+                    self.windowConstraint(node);
 
                 node.position = node.position.add(velocity).add(acceleration);
             }
+        }
+
+        pub fn windowConstraint(self: *Self, node: *Node) void {
+            // Constrain to window size
+            const size = self.core.window.size();
+            node.position.y = std.math.min(node.position.y, @intToFloat(f32, size.height - 10));
+            node.position.y = std.math.max(node.position.y, 10);
+            node.position.x = std.math.min(node.position.x, @intToFloat(f32, size.width - 10));
+            node.position.x = std.math.max(node.position.x, 10);
         }
 
         pub fn handleConstraints(self: *Self) void {
@@ -94,7 +100,7 @@ pub fn Rope(len: usize) type {
 
                 const distance = next.distance(current.*);
 
-                if (!current.equals(self.head().*) or !self.core.input.mouse_pressed()) {
+                if (!current.equals(self.head().*)) {
                     const temp = current.position;
                     current.position.moveToward(next.position, (distance - node_distance) * 0.91);
                     next.position.moveToward(temp, (distance - node_distance) * 0.91);
