@@ -3,39 +3,44 @@ const lsdl = @import("lsdl");
 
 const Rope = @import("rope.zig").Rope;
 
-pub const Vector = lsdl.math.Vector(f32);
+pub const Vector = lsdl.Vector(f32);
 
 pub fn main() anyerror!void {
-    var core = lsdl.core.Core.new(1000, 800);
-    var timer = try lsdl.timer.Timer.new();
+    var core = lsdl.Core.new(1000, 800);
+    var timer_sixty = try lsdl.Timer.new();
+    var timer_hundred = try lsdl.Timer.new();
 
-    var rope = Rope(256).new(0, 0);
+    var rope = Rope(256).new(&core, 0, 0);
 
     var running = true;
     while (running) {
-        const event = &core.input.event;
-        while (core.input.poll()) {
+        while (core.input.poll()) |event| {
             if (event.type == lsdl.SDL_QUIT or event.button.button == lsdl.SDL_SCANCODE_Q) {
                 running = false;
             }
+
+            if (1 == lsdl.SDL_GetMouseState(0, 0)) {
+                rope.head().set(@intToFloat(f32, event.button.x), @intToFloat(f32, event.button.y));
+                rope.update_head = false;
+            } else {
+                rope.update_head = true;
+            }
         }
 
-        if (1 == lsdl.SDL_GetMouseState(0, 0)) {
-            rope.head().set(@intToFloat(f32, event.button.x), @intToFloat(f32, event.button.y));
-            rope.update_head = false;
-        } else {
-            rope.update_head = true;
+        if (timer_hundred.doFrame(200)) {
+            const dt = 10 * timer_hundred.deltaTime(f32) / std.time.ns_per_s;
+
+            rope.update(dt);
+
+            timer_hundred.tick();
         }
 
-        if (!timer.doFrame(60)) continue;
-        const dt = 10 * timer.deltaTime(f32) / std.time.ns_per_s;
+        if (timer_sixty.doFrame(60)) {
+            core.render.clear(0, 0, 0, 255);
+            rope.render(&core.render);
+            core.render.present();
 
-        rope.update(dt);
-
-        core.render.clear(0, 0, 0, 255);
-        rope.render(&core.render);
-        core.render.present();
-
-        timer.tick();
+            timer_sixty.tick();
+        }
     }
 }

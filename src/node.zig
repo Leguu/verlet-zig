@@ -32,4 +32,8 @@ pub const Node = struct {
     pub fn a_mul(self: *Self, dt: f32) f32 {
         return dt * (dt + self.previous_dt) / 2;
     }
+
+    pub fn equals(self: *Self, other: Self) bool {
+        return self.position.equals(other.position) and self.previous.equals(other.previous) and self.previous_dt == other.previous_dt;
+    }
 };
