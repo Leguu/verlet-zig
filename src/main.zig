@@ -20,7 +20,7 @@ pub fn main() anyerror!void {
             }
         }
 
-        if (timer_hundred.doFrame(200)) {
+        if (timer_hundred.doFrame(100)) {
             const dt = 10 * timer_hundred.deltaTime(f32) / std.time.ns_per_s;
 
             rope.update(dt);

@@ -50,11 +50,10 @@ pub fn Rope(len: usize) type {
         pub fn input(self: *Self) void {
             if (self.core.input.mouse_pressed()) {
                 var node = self.head();
-                const pos = self.core.input.mouse_position();
-                const vec = Vector.new(@intToFloat(f32, pos.x), @intToFloat(f32, pos.y));
+                const pos = self.core.input.mouse_position(f32);
 
-                node.position = vec;
-                node.previous.redistance(vec, 0.8);
+                node.position = pos;
+                node.previous.redistance(pos, 0.8);
             }
         }
 
@@ -90,10 +89,10 @@ pub fn Rope(len: usize) type {
 
         pub fn windowConstraint(self: *Self, node: *Node) void {
             // Constrain to window size
-            const size = self.core.window.size();
-            node.position.y = std.math.min(node.position.y, @intToFloat(f32, size.height - 10));
+            const size = self.core.window.size(f32);
+            node.position.y = std.math.min(node.position.y, size.height - 10);
             node.position.y = std.math.max(node.position.y, 10);
-            node.position.x = std.math.min(node.position.x, @intToFloat(f32, size.width - 10));
+            node.position.x = std.math.min(node.position.x, size.width - 10);
             node.position.x = std.math.max(node.position.x, 10);
         }
 
