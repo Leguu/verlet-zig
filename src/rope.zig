@@ -33,10 +33,14 @@ pub fn Rope(len: usize) type {
                 if (self.head().equals(node)) {
                     renderer.drawCircle(node.position.x, node.position.y, 4);
                 }
-                if (i + 1 >= self.nodes.len) return;
+                if (i + 1 >= self.nodes.len) break;
                 const next = self.nodes[i + 1];
                 renderer.drawLine(node.position.x, node.position.y, next.position.x, next.position.y);
             }
+
+            renderer.setDrawColor(100, 100, 100, 255);
+            const size = self.core.window.size(f32);
+            renderer.drawRectangle(10, 10, size.width - 20, size.height - 20);
         }
 
         pub fn head(self: *Self) *Node {
