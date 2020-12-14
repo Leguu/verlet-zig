@@ -17,6 +17,12 @@ pub const Node = struct {
         self.* = new(x, y);
     }
 
+    pub fn redistance(self: *Self, other: *Self, value: f32) void {
+        const temp = self.position;
+        self.position.moveToward(other.position, value);
+        other.position.moveToward(temp, value);
+    }
+
     pub fn distance(self: *Self, other: Self) f32 {
         return self.position.subtract(other.position).length();
     }

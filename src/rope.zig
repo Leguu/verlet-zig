@@ -15,7 +15,7 @@ pub fn Rope(len: usize) type {
 
         const gravity = Vector.new(0, 98);
         const friction = Vector.new(0.99, 0.99);
-        const node_distance = 1;
+        const node_distance = 3;
 
         const Self = @This();
 
@@ -60,7 +60,7 @@ pub fn Rope(len: usize) type {
         pub fn update(self: *Self, dt: f32) void {
             self.simulate(dt);
             var i: usize = 0;
-            while (i < 10) : (i += 1) {
+            while (i < 50) : (i += 1) {
                 self.handleConstraints();
             }
         }
@@ -102,11 +102,10 @@ pub fn Rope(len: usize) type {
                 const next: *Node = &self.nodes[i + 1];
 
                 const distance = next.distance(current.*);
+                const value = (distance - node_distance) * 0.99;
 
                 if (!current.equals(self.head().*)) {
-                    const temp = current.position;
-                    current.position.moveToward(next.position, (distance - node_distance) * 0.91);
-                    next.position.moveToward(temp, (distance - node_distance) * 0.91);
+                    current.redistance(next, value);
                 } else {
                     next.position.moveToward(current.position, distance - node_distance);
                 }
