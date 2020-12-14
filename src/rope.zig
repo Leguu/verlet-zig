@@ -28,7 +28,7 @@ pub fn Rope(len: usize) type {
         }
 
         pub fn render(self: *Self, renderer: *lsdl.Render) void {
-            renderer.setDrawColor(255, 255, 255, 255);
+            renderer.setDrawColor(lsdl.Color.white());
             for (self.nodes) |node, i| {
                 if (self.head().equals(node)) {
                     renderer.drawCircle(node.position.x, node.position.y, 4);
@@ -38,7 +38,7 @@ pub fn Rope(len: usize) type {
                 renderer.drawLine(node.position.x, node.position.y, next.position.x, next.position.y);
             }
 
-            renderer.setDrawColor(100, 100, 100, 255);
+            renderer.setDrawColor(lsdl.Color.gray(100));
             const size = self.core.window.size(f32);
             renderer.drawRectangle(10, 10, size.width - 20, size.height - 20);
         }

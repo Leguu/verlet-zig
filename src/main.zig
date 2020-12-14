@@ -10,7 +10,7 @@ pub fn main() anyerror!void {
     var timer_sixty = try lsdl.Timer.new();
     var timer_hundred = try lsdl.Timer.new();
 
-    var rope = Rope(256).new(&core, 0, 0);
+    const rope = Rope(128).new(&core, 0, 0);
 
     var running = true;
     while (running) {
@@ -23,15 +23,14 @@ pub fn main() anyerror!void {
         if (timer_hundred.doFrame(100)) {
             const dt = 10 * timer_hundred.deltaTime(f32) / std.time.ns_per_s;
 
+            rope.input();
             rope.update(dt);
 
             timer_hundred.tick();
         }
 
         if (timer_sixty.doFrame(60)) {
-            rope.input();
-
-            core.render.clear(0, 0, 0, 255);
+            core.render.clear(lsdl.Color.black());
             rope.render(&core.render);
             core.render.present();
 
