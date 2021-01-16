@@ -10,7 +10,7 @@ pub fn main() anyerror!void {
     var timer_sixty = try lsdl.Timer.new();
     var timer_hundred = try lsdl.Timer.new();
 
-    const rope = Rope(128).new(&core, 0, 0);
+    var rope = Rope(128).new(&core, 0, 0);
 
     var running = true;
     while (running) {
