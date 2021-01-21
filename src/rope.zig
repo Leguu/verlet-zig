@@ -48,9 +48,9 @@ pub fn Rope(len: usize) type {
         }
 
         pub fn input(self: *Self) void {
-            if (self.core.input.mouse_pressed()) {
+            if (self.core.input.mousePressed()) {
                 var node = self.head();
-                const pos = self.core.input.mouse_position(f32);
+                const pos = self.core.input.mousePosition(f32);
 
                 node.position = pos;
                 node.previous.redistance(pos, 0.8);
@@ -67,7 +67,7 @@ pub fn Rope(len: usize) type {
 
         pub fn simulate(self: *Self, dt: f32) void {
             for (self.nodes) |*node, i| {
-                if (node == self.head() and self.core.input.mouse_pressed()) {
+                if (node == self.head() and self.core.input.mousePressed()) {
                     continue;
                 }
                 if (!self.head().equals(node.*)) self.windowConstraint(node);
