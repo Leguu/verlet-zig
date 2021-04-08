@@ -28,7 +28,7 @@ pub fn Rope(len: usize) type {
         }
 
         pub fn render(self: *Self, renderer: *lsdl.Render) void {
-            renderer.setDrawColor(lsdl.Color.white());
+            renderer.setDrawColor(lsdl.Color.white);
             for (self.nodes) |node, i| {
                 if (self.head().equals(node)) {
                     renderer.drawCircle(node.position.x, node.position.y, 4);
@@ -38,9 +38,9 @@ pub fn Rope(len: usize) type {
                 renderer.drawLine(node.position.x, node.position.y, next.position.x, next.position.y);
             }
 
-            renderer.setDrawColor(lsdl.Color.gray(100));
-            const size = self.core.window.size(f32);
-            renderer.drawRectangle(10, 10, size.width - 20, size.height - 20);
+            renderer.setDrawColor(lsdl.Color.uniform(100));
+            const size = self.core.window.size().lossyCast(f32);
+            renderer.drawRectangle(10, 10, size.x - 20, size.y - 20);
         }
 
         pub fn head(self: *Self) *Node {
@@ -48,9 +48,9 @@ pub fn Rope(len: usize) type {
         }
 
         pub fn input(self: *Self) void {
-            if (self.core.input.mousePressed()) {
+            if (lsdl.input.mousePressed() == lsdl.input.MouseState.Left) {
                 var node = self.head();
-                const pos = self.core.input.mousePosition(f32);
+                const pos = lsdl.input.mousePosition(f32);
 
                 node.position = pos;
                 node.previous.redistance(pos, 0.8);
@@ -67,7 +67,7 @@ pub fn Rope(len: usize) type {
 
         pub fn simulate(self: *Self, dt: f32) void {
             for (self.nodes) |*node, i| {
-                if (node == self.head() and self.core.input.mousePressed()) {
+                if (node == self.head() and lsdl.input.mousePressed() == lsdl.input.MouseState.Left) {
                     continue;
                 }
                 if (!self.head().equals(node.*)) self.windowConstraint(node);
@@ -89,10 +89,10 @@ pub fn Rope(len: usize) type {
 
         pub fn windowConstraint(self: *Self, node: *Node) void {
             // Constrain to window size
-            const size = self.core.window.size(f32);
-            node.position.y = std.math.min(node.position.y, size.height - 10);
+            const size = self.core.window.size().lossyCast(f32);
+            node.position.y = std.math.min(node.position.y, size.y - 10);
             node.position.y = std.math.max(node.position.y, 10);
-            node.position.x = std.math.min(node.position.x, size.width - 10);
+            node.position.x = std.math.min(node.position.x, size.x - 10);
             node.position.x = std.math.max(node.position.x, 10);
         }
 

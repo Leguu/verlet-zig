@@ -5,10 +5,11 @@ pub fn build(b: *Builder) void {
     const mode = b.standardReleaseOptions();
 
     const exe = b.addExecutable("verlet-zig", "src/main.zig");
-    exe.addPackagePath("lsdl", "lib/lsdl-zig/src/lsdl.zig");
+    exe.addPackagePath("lsdl", "lsdl/src/lsdl.zig");
 
     exe.linkLibC();
     exe.linkSystemLibrary("SDL2");
+    exe.linkSystemLibrary("SDL2_image");
 
     exe.setTarget(target);
     exe.setBuildMode(mode);
